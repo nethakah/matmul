@@ -16,12 +16,12 @@ generalizes to arbitrary MxN * NxK products.
 | Version | Compute units | Compute latency | Operand storage | Dimensions | Scales to large size? |
 |---|---|---|---|---|---|
 | `sequential/` | 1 MAC | ~N^3 cycles | registers | NxN | no |
-| `systolic/` | N^2 PEs | ~3N cycles | registers | NxN | no (storage) |
+| `systolic_reg/` | N^2 PEs | ~3N cycles | registers | NxN | no (storage) |
 | `systolic_bram/` | M*K PEs | ~M+N+K cycles | banked BRAM | MxN * NxK | yes |
 
 - **`sequential/`** — a single multiply-accumulate unit computes one output element at a
   time over N^3 cycles. Minimal area, lowest throughput. The baseline.
-- **`systolic/`** — an NxN grid of processing elements (output-stationary dataflow).
+- **`systolic_reg/`** — an NxN grid of processing elements (output-stationary dataflow).
   A flows left-to-right, B flows top-to-bottom; each PE owns one output element and
   performs one MAC per cycle. ~N-times-or-better speedup for N^2 the multipliers.
 - **`systolic_bram/`** — the systolic array with operand storage moved from flip-flops
@@ -111,7 +111,7 @@ finishes at ~M+N+K cycles.
 Requires Icarus Verilog and cocotb.
 
 ```
-cd systolic_bram      # or sequential/ or systolic/
+cd systolic_bram      # or sequential/ or systolic_reg/
 make
 ```
 
