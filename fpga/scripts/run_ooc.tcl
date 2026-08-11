@@ -8,7 +8,7 @@ set N [lindex $argv 1]
 set M [expr {$argc > 2 ? [lindex $argv 2] : $N}]
 set K [expr {$argc > 3 ? [lindex $argv 3] : $N}]
 
-set part xzcu7ev-ffvc1156-2-e
+set part xczu7ev-ffvc1156-2-e
 
 set here [file dirname [file normalize [info script]]]
 set root [file normalize $here/../..]

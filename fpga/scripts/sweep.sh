@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # sweep all 3 architectures across sizes
 # run under Tmux
 
