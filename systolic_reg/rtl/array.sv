@@ -4,6 +4,7 @@ module array #(
 )(
     input logic clk,
     input logic rst,
+    input logic clr,
     
     input logic [WIDTH-1:0] a_edge [0:N-1],
     input logic [WIDTH-1:0] b_edge [0:N-1],
@@ -35,6 +36,7 @@ generate
             ) u_pe ( // dont forget instance name
                 .clk (clk),
                 .rst (rst),
+                .clr (clr),
                 .a_in (a_wire[i][j]),
                 .a_out (a_wire[i][j+1]),
                 .b_in (b_wire[i][j]),

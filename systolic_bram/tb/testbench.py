@@ -14,43 +14,20 @@ async def testMatrixMultiplier(dut): # async so we can wait for clock edge to ha
     # clock start
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
 
+    # reset
+    dut.rst.value = 1
+    await RisingEdge(dut.clk)
+    dut.rst.value = 0
+    await RisingEdge(dut.clk)
+
     for testRun in range(100):
-        # reset
-        dut.rst.value = 1
-        await RisingEdge(dut.clk)
-        dut.rst.value = 0
-        await RisingEdge(dut.clk)
-
-        dut.res_rdy.value = 1
-
         width = 8
         matA = generateMatrix(M, N, width)
         matB = generateMatrix(N, K, width)
 
-        # inputs are valid
-        dut.ops_val.value=1
-
-        # wait for hardware to be ready
-        timeout=100
-        cycles=0
-        while not dut.ops_rdy.value:
-            await RisingEdge(dut.clk)
-            cycles += 1
-            if cycles > timeout:
-                raise Exception("timeout waiting for ops_rdy")
-            # breaks when ops_rdy (hardware is ready to accept)
-
-        # send matrices in
         await streamMatrixIn(dut, matA)
         await streamMatrixIn(dut, matB)
-    
-        # wait for control to leave IDLE (ops_rdy goes low)
-        while dut.ops_rdy.value:
-            await RisingEdge(dut.clk)
-
-        # deassert ops_val
-        dut.ops_val.value = 0
-    
+        
         # read results as they stream out
         softwareResult = matrixMultiplier(matA, matB)
         hardwareResult = await readHardwareResult(dut, M, K)

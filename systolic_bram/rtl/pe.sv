@@ -4,6 +4,7 @@ module pe #(
 )(
     input logic clk,
     input logic rst,
+    input logic clr, // per op accumulator clearing
     
     input logic [WIDTH-1:0] a_in,
     input logic [WIDTH-1:0] b_in,
@@ -14,7 +15,7 @@ module pe #(
 );
 
 always_ff @(posedge clk) begin
-    if (rst) begin
+    if (rst || clr) begin
         accumulator <= '0;
         a_out <= '0;
         b_out <= '0;

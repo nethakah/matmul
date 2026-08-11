@@ -21,6 +21,7 @@ module datapath #(
 
     //control.sv - logic here is ctrl sets busy=1, then waits until done=1
     input logic compute_busy,
+    input logic clear,
     output logic loaded,
     output logic compute_done
 );
@@ -80,6 +81,7 @@ array #(
 ) u_array (
     .clk (clk),
     .rst (rst),
+    .clr (clear),
     .a_edge (a_edge),
     .b_edge (b_edge),
     .ab_out (ab_out)
@@ -110,13 +112,21 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
+    end
+    else if (clear) begin
+        // per op need to reinitialize like rst but without actual matrix data
+        load_cnt <= '0;
+        t <= '0;
+        out_cnt <= '0;
 
-    // load
-    end else if (s_axis_tvalid && s_axis_tready) begin
+        m_axis_tvalid <= '0;
+        m_axis_tlast <= '0;
+        compute_done <= '0;
+    end
+    else if (s_axis_tvalid && s_axis_tready) begin // load
         load_cnt <= load_cnt + 1;
-
-    // if we are computing, advance (while t < 3N-3)
-    end else if (compute_busy) begin
+    end 
+    else if (compute_busy) begin // if we are computing, advance (while t < 3N-3)
         if (t < M+N+K-3) begin // computing values:
         // (M-1) is vert distance to farthest row for B propagating down
         // (K-1) is horiz distance to farthest col for A propagating right

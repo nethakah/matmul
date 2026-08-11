@@ -18,13 +18,11 @@ module datapath #(
     output logic m_axis_tlast,
     input logic m_axis_tready,
     
-    // control.sv
-    output logic i_done,
-    output logic j_done,
-    output logic k_done,
-
+    //
     input logic mac, // tells us to multiply-accumulate
-    output logic loaded // tell ctrl we have loaded the two matrices fully
+    output logic loaded, // tell ctrl we have loaded the two matrices fully
+    input logic clear,
+    output logic compute_done
 );
 
 logic [WIDTH-1:0] mat_a [N-1:0][N-1:0];
@@ -42,11 +40,7 @@ logic [$clog2(N)-1:0] i; // row of mat_a
 logic [$clog2(N)-1:0] j; // col of mat_b
 logic [$clog2(N)-1:0] k; // fixed and cycles from 0->N-1 so we pick out one element from row and one from col each clk cycle
 
-assign i_done = (i == N-1);
-assign j_done = (j == N-1);
-assign k_done = (k == N-1);
 assign loaded = (load_cnt == 2*N*N);
-
 assign s_axis_tready = (load_cnt < 2*N*N); // load entries until we get them all!
 
 // calculation clock
@@ -71,9 +65,21 @@ always_ff @(posedge clk) begin
         m_axis_tdata <= '0;
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
-
+        compute_done <= '0;
+    end 
+    else if (clear) begin
+        // per op reinitialize (dont need to reset matrix arrays bc overwritten by next load)
+        accumulator <= '0;
+        load_cnt <= '0;
+        i <= '0;
+        j <= '0;
+        k <= '0;
+        m_axis_tvalid <= '0;
+        m_axis_tlast <= '0;
+        compute_done <= '0;
+    end
     // load the two matrices fully - this case happens N*N times first then is done.
-    end else if (s_axis_tvalid && s_axis_tready) begin
+    else if (s_axis_tvalid && s_axis_tready) begin
         // row = (load_cnt % (N*N)) / N;
         // col = (load_cnt % (N*N)) % N;
         if (load_cnt < N*N) begin
@@ -82,9 +88,9 @@ always_ff @(posedge clk) begin
             mat_b[(load_cnt%(N*N))/N][(load_cnt%(N*N))%N] <= s_axis_tdata;
         end
         load_cnt <= load_cnt + 1;
-
+    end 
     // Compute an entry and output it (case 2 and 3).
-    end else if (mac) begin
+    else if (mac) begin
         accumulator <= accumulator + (mat_a[i][k] * mat_b[k][j]);
         if (k==N-1) begin // current element fully computed
             j <= j + 1;
@@ -103,9 +109,14 @@ always_ff @(posedge clk) begin
         end else begin
             k <= k+1;
         end
-    end else if (m_axis_tvalid && m_axis_tready) begin // outputting
+    end 
+    // outputting
+    else if (m_axis_tvalid && m_axis_tready) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
+        if (m_axis_tlast) begin
+            compute_done <= 1'b1;
+        end
     end
 end
 

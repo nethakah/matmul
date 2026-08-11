@@ -1,8 +1,6 @@
 
 module chip #(
-    parameter M = 8,
     parameter N = 4,
-    parameter K = 6,
     parameter WIDTH = 8
 )(
     input logic clk,
@@ -18,29 +16,23 @@ module chip #(
     output logic [2*WIDTH+$clog2(N)-1:0] m_axis_tdata,
     output logic m_axis_tvalid,
     output logic m_axis_tlast,
-    input logic m_axis_tready,
-
-    // ctrl
-    input logic ops_val,
-    output logic ops_rdy,
-    output logic res_val,
-    input logic res_rdy
+    input logic m_axis_tready
 );
 
 // dp and ctrl internal ports
 logic loaded;
 logic compute_busy;
 logic compute_done;
+logic clear;
 
 // instantiations
-datapath #(
-    .M (M),
+datapath # (
     .N (N),
-    .K (K),
     .WIDTH (WIDTH)
 ) dp (
     .clk (clk),
     .rst (rst),
+    .clear (clear),
     .s_axis_tdata (s_axis_tdata),
     .s_axis_tvalid (s_axis_tvalid),
     .s_axis_tlast (s_axis_tlast),
@@ -57,10 +49,7 @@ datapath #(
 control ctrl (
     .clk (clk),
     .rst (rst),
-    .ops_val (ops_val),
-    .ops_rdy (ops_rdy),
-    .res_val (res_val),
-    .res_rdy (res_rdy),
+    .clear (clear),
     .loaded (loaded),
     .compute_busy (compute_busy),
     .compute_done (compute_done)

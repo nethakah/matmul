@@ -1,7 +1,9 @@
-import cocotb, random
+import cocotb, random, os
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
 from golden_model import matrixMultiplier, generateMatrix
+
+N = int(os.environ.get("N", 4))
 
 @cocotb.test()
 async def testMatrixMultiplier(dut): # async so we can wait for clock edge to happen
@@ -9,50 +11,25 @@ async def testMatrixMultiplier(dut): # async so we can wait for clock edge to ha
     # clock start
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
 
+    # reset
+    dut.rst.value = 1
+    await RisingEdge(dut.clk)
+    dut.rst.value = 0
+    await RisingEdge(dut.clk)
+
     for testRun in range(100):
-        # reset
-        dut.rst.value = 1
-        await RisingEdge(dut.clk)
-        dut.rst.value = 0
-        await RisingEdge(dut.clk)
-
-        dut.res_rdy.value = 1
-
-        n = 4
         width = 8
-        matA = generateMatrix(n, width)
-        matB = generateMatrix(n, width)
+        matA = generateMatrix(N, width)
+        matB = generateMatrix(N, width)
 
-        # inputs are valid
-        dut.ops_val.value=1
-
-        # wait for hardware to be ready
-        timeout=100
-        cycles=0
-        while not dut.ops_rdy.value:
-            await RisingEdge(dut.clk)
-            cycles += 1
-            if cycles > timeout:
-                raise Exception("timeout waiting for ops_rdy")
-            # breaks when ops_rdy (hardware is ready to accept)
-
-        # send matrices in
         await streamMatrixIn(dut, matA)
         await streamMatrixIn(dut, matB)
-    
-        # wait for control to leave IDLE (ops_rdy goes low)
-        while dut.ops_rdy.value:
-            await RisingEdge(dut.clk)
-
-        # deassert ops_val
-        dut.ops_val.value = 0
-    
+        
         # read results as they stream out
         softwareResult = matrixMultiplier(matA, matB)
-        hardwareResult = await readHardwareResult(dut, n)
+        hardwareResult = await readHardwareResult(dut, N)
 
         assert softwareResult == hardwareResult, f"Error on trial {testRun}. Hardware: {hardwareResult}, Software: {softwareResult}"
-
 
 async def streamMatrixIn(dut, mat: list):
     rows = len(mat)

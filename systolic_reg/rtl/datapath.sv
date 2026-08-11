@@ -19,6 +19,7 @@ module datapath #(
 
     //control.sv - logic here is ctrl sets busy=1, then waits until done=1
     input logic compute_busy,
+    input logic clear,
     output logic loaded,
     output logic compute_done
 );
@@ -37,6 +38,7 @@ array #(
 ) u_array (
     .clk (clk),
     .rst (rst),
+    .clr (clear),
     .a_edge (a_edge),
     .b_edge (b_edge),
     .ab_out (ab_out)
@@ -72,9 +74,19 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
+    end
+    else if (clear) begin
+        // internal signals
+        load_cnt <= '0;
+        t <= '0;
+        out_cnt <= '0;
 
-    // load the two matrices fully - this case happens N*N times first then is done.
-    end else if (s_axis_tvalid && s_axis_tready) begin
+        // outputs driven by datapath that are not handled elsewhere
+        m_axis_tvalid <= '0;
+        m_axis_tlast <= '0;
+        compute_done <= '0;
+    end // load the two matrices fully - this case happens N*N times first then is done.
+    else if (s_axis_tvalid && s_axis_tready) begin
         // row = (load_cnt % (N*N)) / N;
         // col = (load_cnt % (N*N)) % N;
         if (load_cnt < N*N) begin
@@ -84,8 +96,8 @@ always_ff @(posedge clk) begin
         end
         load_cnt <= load_cnt + 1;
 
-    // if we are computing, advance (while t < 3N-3)
-    end else if (compute_busy) begin
+    end // if we are computing, advance (while t < 3N-3)
+    else if (compute_busy) begin
         if (t < 3*N-3) begin // computing values - changed to -2 because we gated feed in always_comb w compute_busy
             t <= t + 1;
         end else begin // (t == 3N-3) -> done computing
@@ -139,12 +151,6 @@ always_comb begin
             b_edge[j] = '0;
         end
     end
-end
-
-always @(posedge clk) begin
-    if (compute_busy)
-        $display("t=%0d  ab_out[0][0]=%0d  out_cnt=%0d  tvalid=%0d tready=%0d tdata=%0d",
-                 t, ab_out[0][0], out_cnt, m_axis_tvalid, m_axis_tready, m_axis_tdata);
 end
 
 endmodule
