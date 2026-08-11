@@ -43,10 +43,10 @@ set wns [get_property SLACK [get_timing_paths -delay_type max]]
 set period 2.000
 set fmax [expr {1000.0 / ($period - $wns)}]
 
-set luts [llength [get_cells -hier -filter {PRIMITIVE_GROUP == LUT}]]
-set ffs [llength [get_cells -hier -filter {PRIMITIVE_GROUP == FLOP_LATCH}]]
-set dsps [llength [get_cells -hier -filter {PRIMITIVE_GROUP == ARITHMETIC}]]
-set brams [llength [get_cells -hier -filter {PRIMITIVE_GROUP == BLOCKRAM}]]
+set luts [llength [get_cells -hier -filter {REF_NAME =~ LUT*}]]
+set ffs [llength [get_cells -hier -filter {REF_NAME =~ FD*}]]
+set dsps [llength [get_cells -hier -filter {REF_NAME =~ DSP*}]]
+set brams [llength [get_cells -hier -filter {REF_NAME =~ RAMB*}]]
 
 set fh [open $outdir/summary.txt w]
 puts $fh "version $version"
