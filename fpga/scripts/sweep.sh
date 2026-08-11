@@ -6,7 +6,7 @@
 set -e
 cd "$(dirname "$0")"
 
-for n in 4 8 16 32; do
+for n in 4 8 16 32 64; do
     for v in sequential systolic_reg systolic_bram; do
         echo "### $v N=$n ###"
         vivado -mode batch -nojournal -nolog -source run_ooc.tcl -tclargs "$v" "$n" || echo "FAILED: $v N=$n"
