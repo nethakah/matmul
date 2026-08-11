@@ -17,3 +17,9 @@ dump.*
 
 # OS clutter
 .DS_Store
+
+# FPGA
+fpga/results/**/*.rpt
+vivado*.jou
+vivado*.log
+.Xil/
