@@ -22,7 +22,9 @@ module datapath #(
     input logic mac, // tells us to multiply-accumulate
     output logic loaded, // tell ctrl we have loaded the two matrices fully
     input logic clear,
-    output logic compute_done
+    output logic compute_done,
+
+    output logic frame_error
 );
 
 logic [WIDTH-1:0] mat_a [N-1:0][N-1:0];
@@ -77,6 +79,7 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
+        frame_error <= '0;
     end
     // load the two matrices fully - this case happens N*N times first then is done.
     else if (s_axis_tvalid && s_axis_tready) begin
@@ -88,6 +91,10 @@ always_ff @(posedge clk) begin
             mat_b[(load_cnt%(N*N))/N][(load_cnt%(N*N))%N] <= s_axis_tdata;
         end
         load_cnt <= load_cnt + 1;
+
+        if (s_axis_tlast != (load_cnt == 2*N*N - 1)) begin
+            frame_error <= 1'b1;
+        end
     end 
     // Compute an entry and output it (case 2 and 3).
     else if (mac) begin

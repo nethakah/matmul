@@ -23,7 +23,10 @@ module datapath #(
     input logic compute_busy,
     input logic clear,
     output logic loaded,
-    output logic compute_done
+    output logic compute_done,
+
+    // flag for end-of-frame marker (tlast) disagreeing w our own elem count
+    output logic frame_error
 );
 
 // BRAM bank wire lists
@@ -112,6 +115,7 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
+        frame_error <= '0;
     end
     else if (clear) begin
         // per op need to reinitialize like rst but without actual matrix data
@@ -122,9 +126,14 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
+        // NO CLEARING FRAME_ERROR bc integreity error must persist until full reset
     end
     else if (s_axis_tvalid && s_axis_tready) begin // load
         load_cnt <= load_cnt + 1;
+
+        if (s_axis_tlast != (load_cnt == M*N + N*K - 1)) begin
+            frame_error <= 1'b1;
+        end
     end 
     else if (compute_busy) begin // if we are computing, advance (while t < 3N-3)
         if (t < M+N+K-3) begin // computing values:

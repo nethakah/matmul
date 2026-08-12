@@ -18,7 +18,10 @@ module chip #(
     output logic [2*WIDTH+$clog2(N)-1:0] m_axis_tdata,
     output logic m_axis_tvalid,
     output logic m_axis_tlast,
-    input logic m_axis_tready
+    input logic m_axis_tready,
+
+    // frame integrity error from DP
+    output logic frame_error
 );
 
 // dp and ctrl internal ports
@@ -47,6 +50,7 @@ datapath #(
     .loaded (loaded),
     .compute_busy (compute_busy),
     .compute_done (compute_done),
+    .frame_error (frame_error),
     .clear (clear)
 );
 
