@@ -1,0 +1,104 @@
+version sequential
+M 16 N 16 K 16
+LUT 1993
+FF 4243
+DSP 0
+BRAM 0
+WNS -1.844 ns
+Fmax 260.1 MHz
+version sequential
+M 32 N 32 K 32
+LUT 7348
+FF 16709
+DSP 0
+BRAM 0
+WNS -2.672 ns
+Fmax 214.0 MHz
+version sequential
+M 4 N 4 K 4
+LUT 422
+FF 316
+DSP 0
+BRAM 0
+WNS -0.994 ns
+Fmax 334.0 MHz
+version sequential
+M 64 N 64 K 64
+LUT 26882
+FF 66239
+DSP 0
+BRAM 0
+WNS -3.614 ns
+Fmax 178.1 MHz
+version sequential
+M 8 N 8 K 8
+LUT 710
+FF 1105
+DSP 0
+BRAM 0
+WNS -1.051 ns
+Fmax 327.8 MHz
+version systolic_bram
+M 16 N 16 K 16
+LUT 28860
+FF 9333
+DSP 0
+BRAM 0
+WNS -0.787 ns
+Fmax 358.8 MHz
+version systolic_bram
+M 32 N 32 K 32
+LUT 116305
+FF 38199
+DSP 0
+BRAM 0
+WNS -1.620 ns
+Fmax 276.2 MHz
+version systolic_bram
+M 4 N 4 K 4
+LUT 1988
+FF 595
+DSP 0
+BRAM 0
+WNS -0.854 ns
+Fmax 350.4 MHz
+version systolic_bram
+M 8 N 8 K 8
+LUT 7408
+FF 2322
+DSP 0
+BRAM 0
+WNS -0.511 ns
+Fmax 398.2 MHz
+version systolic_reg
+M 16 N 16 K 16
+LUT 29740
+FF 13336
+DSP 0
+BRAM 0
+WNS -1.281 ns
+Fmax 304.8 MHz
+version systolic_reg
+M 32 N 32 K 32
+LUT 121739
+FF 54176
+DSP 0
+BRAM 0
+WNS -2.208 ns
+Fmax 237.6 MHz
+version systolic_reg
+M 4 N 4 K 4
+LUT 1982
+FF 801
+DSP 0
+BRAM 0
+WNS -0.573 ns
+Fmax 388.7 MHz
+version systolic_reg
+M 8 N 8 K 8
+LUT 7547
+FF 3268
+DSP 0
+BRAM 0
+WNS -0.851 ns
+Fmax 350.8 MHz

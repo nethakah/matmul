@@ -1,0 +1,8 @@
+version sequential
+M 4 N 4 K 4
+LUT 422
+FF 316
+DSP 0
+BRAM 0
+WNS -0.994 ns
+Fmax 334.0 MHz

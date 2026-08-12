@@ -1,0 +1,8 @@
+version systolic_reg
+M 8 N 8 K 8
+LUT 7547
+FF 3268
+DSP 0
+BRAM 0
+WNS -0.851 ns
+Fmax 350.8 MHz

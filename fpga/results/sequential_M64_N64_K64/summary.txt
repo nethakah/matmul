@@ -1,0 +1,8 @@
+version sequential
+M 64 N 64 K 64
+LUT 26882
+FF 66239
+DSP 0
+BRAM 0
+WNS -3.614 ns
+Fmax 178.1 MHz

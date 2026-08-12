@@ -1,0 +1,8 @@
+version systolic_reg
+M 32 N 32 K 32
+LUT 121739
+FF 54176
+DSP 0
+BRAM 0
+WNS -2.208 ns
+Fmax 237.6 MHz

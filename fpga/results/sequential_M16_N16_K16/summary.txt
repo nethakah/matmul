@@ -1,0 +1,8 @@
+version sequential
+M 16 N 16 K 16
+LUT 1993
+FF 4243
+DSP 0
+BRAM 0
+WNS -1.844 ns
+Fmax 260.1 MHz
