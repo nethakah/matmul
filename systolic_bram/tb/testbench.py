@@ -25,17 +25,17 @@ async def testMatrixMultiplier(dut): # async so we can wait for clock edge to ha
         matA = generateMatrix(M, N, width)
         matB = generateMatrix(N, K, width)
 
-        await streamMatrixIn(dut, matA)
-        await streamMatrixIn(dut, matB)
+        await streamMatrixIn(dut, matA, False)
+        await streamMatrixIn(dut, matB, True)
         
         # read results as they stream out
         softwareResult = matrixMultiplier(matA, matB)
         hardwareResult = await readHardwareResult(dut, M, K)
 
         assert softwareResult == hardwareResult, f"Error on trial {testRun}. Hardware: {hardwareResult}, Software: {softwareResult}"
+        assert dut.frame_error.value == 0, f"frame_error asserted on trial {testRun}"
 
-
-async def streamMatrixIn(dut, mat: list):
+async def streamMatrixIn(dut, mat: list, is_last_matrix: bool):
     rows = len(mat)
     cols = len(mat[0])
 
@@ -43,7 +43,7 @@ async def streamMatrixIn(dut, mat: list):
         for col in range(cols):
             dut.s_axis_tdata.value = mat[row][col]
             dut.s_axis_tvalid.value = 1
-            dut.s_axis_tlast.value = (row==rows-1 and col==cols-1)
+            dut.s_axis_tlast.value = (is_last_matrix and row==rows-1 and col==cols-1)
 
             cycles = 0
             while True:

@@ -68,6 +68,7 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
+        frame_error <= '0;
     end 
     else if (clear) begin
         // per op reinitialize (dont need to reset matrix arrays bc overwritten by next load)
@@ -79,7 +80,6 @@ always_ff @(posedge clk) begin
         m_axis_tvalid <= '0;
         m_axis_tlast <= '0;
         compute_done <= '0;
-        frame_error <= '0;
     end
     // load the two matrices fully - this case happens N*N times first then is done.
     else if (s_axis_tvalid && s_axis_tready) begin
