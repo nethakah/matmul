@@ -1,0 +1,8 @@
+version systolic_bram
+M 16 N 16 K 16
+LUT 28640
+FF 9065
+DSP 0
+BRAM 32
+WNS -1.450 ns
+Fmax 289.9 MHz

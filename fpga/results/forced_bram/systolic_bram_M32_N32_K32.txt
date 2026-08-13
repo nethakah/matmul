@@ -1,0 +1,8 @@
+version systolic_bram
+M 32 N 32 K 32
+LUT 116101
+FF 37585
+DSP 0
+BRAM 64
+WNS -1.958 ns
+Fmax 252.7 MHz
