@@ -14,8 +14,9 @@ module bram #(
     output logic [WIDTH-1:0] rdata
 );
 
-// storage - forced BRAM for simulation testing (remove before logic part for implied)
-(* ram_style = "block" *) logic [WIDTH-1:0] mem [0:DEPTH-1];
+// storage
+// to force BRAM, before logic add `(* ram_style = "block" *)`
+logic [WIDTH-1:0] mem [0:DEPTH-1];
 
 always_ff @(posedge clk) begin
     if (we) begin
